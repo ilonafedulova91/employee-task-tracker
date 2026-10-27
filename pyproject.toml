@@ -1,0 +1,41 @@
+
+[project]
+name = "employee-task-tracker"
+version = "0.1.0"
+description = "A REST API for managing and tracking employee tasks"
+authors = [
+    { name = "Ilona Fedulova" }
+]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "django>=5.2,<6.0",
+    "djangorestframework>=3.16,<4.0",
+    "drf-spectacular>=0.28,<1.0",
+    "django-filter>=25.1,<26.0",
+    "psycopg2-binary>=2.9,<3.0",
+    "python-dotenv>=1.1,<2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0,<10.0",
+    "pytest-django>=4.9,<5.0",
+    "pytest-cov>=6.0,<8.0",
+    "ruff>=0.11,<1.0",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0,<3.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
+
+[tool.ruff.lint]
+ignore = ["RUF012"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "-ra"
