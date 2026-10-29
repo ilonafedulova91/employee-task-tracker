@@ -1,0 +1,88 @@
+
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  test:
+    name: Tests and code quality
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: employee_tasks
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d employee_tasks"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SECRET_KEY: ci-test-secret-key-not-for-production
+      DB_NAME: employee_tasks
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: localhost
+      DB_PORT: "5432"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pip install poetry==2.2.1
+
+      - name: Install dependencies
+        run: poetry install --with dev --no-interaction --no-ansi
+
+      - name: Run tests
+        run: poetry run pytest
+
+      - name: Check lint
+        run: poetry run ruff check .
+
+      - name: Check formatting
+        run: poetry run ruff format --check .
+
+  docker:
+    name: Validate Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create CI environment file
+        run: |
+          cat > .env <<'EOF'
+          SECRET_KEY=ci-test-secret-key-not-for-production
+          DB_NAME=employee_tasks
+          DB_USER=postgres
+          DB_PASSWORD=postgres
+          DB_HOST=db
+          DB_PORT=5432
+          EOF
+
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
+      - name: Build Docker image
+        run: docker build -t employee-task-tracker:ci .

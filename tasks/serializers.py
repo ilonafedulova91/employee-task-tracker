@@ -22,11 +22,7 @@ class TaskSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         request = self.context.get("request")
 
-        if (
-                request
-                and request.user.is_authenticated
-                and not request.user.is_staff
-        ):
+        if request and request.user.is_authenticated and not request.user.is_staff:
             allowed_fields = {"status"}
             submitted_fields = set(self.initial_data.keys())
 
