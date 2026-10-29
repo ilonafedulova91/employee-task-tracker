@@ -1,10 +1,17 @@
+from typing import Any
+
 from rest_framework import serializers
+from rest_framework.request import Request
 
 from .models import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    """Serialize task data and restrict employee updates."""
+
     class Meta:
+        """Define the fields exposed by the task API."""
+
         model = Task
         fields = [
             "id",
@@ -19,8 +26,9 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "created_at", "created_by"]
 
-    def validate(self, attrs):
-        request = self.context.get("request")
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """Ensure employees submit only the task status field."""
+        request: Request | None = self.context.get("request")
 
         if request and request.user.is_authenticated and not request.user.is_staff:
             allowed_fields = {"status"}

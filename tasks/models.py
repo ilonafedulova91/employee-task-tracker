@@ -1,15 +1,20 @@
-# Create your models here.
 from django.conf import settings
 from django.db import models
 
 
 class Task(models.Model):
+    """Represent a task assigned to an employee."""
+
     class Status(models.TextChoices):
+        """Available task statuses."""
+
         PENDING = "pending", "Pending"
         IN_PROGRESS = "in_progress", "In progress"
         COMPLETED = "completed", "Completed"
 
     class Priority(models.TextChoices):
+        """Available task priority levels."""
+
         LOW = "low", "Low"
         MEDIUM = "medium", "Medium"
         HIGH = "high", "High"
@@ -41,5 +46,6 @@ class Task(models.Model):
         related_name="created_tasks",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the task title as its string representation."""
         return self.title
