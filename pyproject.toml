@@ -33,7 +33,7 @@ build-backend = "poetry.core.masonry.api"
 package-mode = false
 
 [tool.ruff.lint]
-ignore = ["RUF012"]
+ignore = ["RUF012", "EXE001"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
